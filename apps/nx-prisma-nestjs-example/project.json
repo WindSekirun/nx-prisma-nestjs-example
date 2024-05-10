@@ -1,0 +1,24 @@
+{
+  "name": "nx-prisma-nestjs-example",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/nx-prisma-nestjs-example/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "nx-prisma-nestjs-example:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "nx-prisma-nestjs-example:build:development"
+        },
+        "production": {
+          "buildTarget": "nx-prisma-nestjs-example:build:production"
+        }
+      }
+    }
+  }
+}
