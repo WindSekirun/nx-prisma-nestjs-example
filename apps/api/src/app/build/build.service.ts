@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { getPipelineResult } from './utils/utils';
 
 @Injectable()
 export class BuildService {
@@ -34,10 +35,10 @@ export class BuildService {
   }
 
   async getBuild(buildId: string) {
-    return await this.prisma.pipelineResult.findUnique({
-      where: {
-        buildId: buildId,
-      },
-    });
+    return await this.getPipelineResult(buildId);
+  }
+  
+  private async getPipelineResult(buildId: string) {
+    return await getPipelineResult(this.prisma, buildId);
   }
 }

@@ -1,21 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { BuildService } from './build.service';
-import {
-  ApiExtraModels,
-  ApiResponse,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 import { PipelineResult } from '@nx-prisma-nestjs-example/model/prisma/pipeline_result';
-import { ReqUnitTestResult } from '@nx-prisma-nestjs-example/model/UnitTests';
 
 @Controller()
 export class BuildController {
@@ -33,7 +19,7 @@ export class BuildController {
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string
   ) {
-    return this.buildService.getBuildList(cursor, limit)
+    return this.buildService.getBuildList(cursor, limit);
   }
 
   @ApiExtraModels(PipelineResult)
@@ -46,10 +32,5 @@ export class BuildController {
   @Get('build/:buildId')
   async getBuild(@Param('buildId') buildId: string) {
     return await this.buildService.getBuild(buildId);
-  }
-
-  @Get('build/:buildId/failed/unit')
-  async getFailedUnitTestList(@Param('buildId') buildId: string) {
-    Logger.debug(buildId);
   }
 }

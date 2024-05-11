@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { getPipelineResult } from '../utils/utils';
 
 @Injectable()
 export class BuildLogService {
@@ -33,5 +34,9 @@ export class BuildLogService {
     });
 
     return chunk[0];
+  }
+
+  private async getPipelineResult(buildId: string) {
+    return await getPipelineResult(this.prisma, buildId);
   }
 }

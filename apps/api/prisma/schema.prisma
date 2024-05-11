@@ -82,15 +82,18 @@ model UnitTestResult {
 
 model UnitTestFailedTest {
   id           String @id @default(cuid())
-  classId      String
   className    String
-  functionId   String
   functionName String
+  moduleName   String
 
-  unitTestResult   UnitTestResult @relation(fields: [unitTestResultId], references: [id])
+  unitTestClass    UnitTestClass    @relation(fields: [classId], references: [id])
+  classId          String
+  unitTestFunction UnitTestFunction @relation(fields: [functionId], references: [id])
+  functionId       String
+  unitTestResult   UnitTestResult   @relation(fields: [unitTestResultId], references: [id])
   unitTestResultId String
 
-  @@index([classId, functionId])
+  @@index([classId, functionId, moduleName])
 }
 
 model UnitTestClass {
@@ -100,8 +103,9 @@ model UnitTestClass {
   updatedAt     DateTime           @updatedAt
   testFunctions UnitTestFunction[]
 
-  unitTestResult   UnitTestResult @relation(fields: [unitTestResultId], references: [id])
-  unitTestResultId String
+  unitTestResult     UnitTestResult       @relation(fields: [unitTestResultId], references: [id])
+  unitTestResultId   String
+  UnitTestFailedTest UnitTestFailedTest[]
 
   @@index([unitTestResultId, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }
@@ -114,8 +118,9 @@ model UnitTestFunction {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  unitTestClass   UnitTestClass @relation(fields: [unitTestClassId], references: [id])
-  unitTestClassId String
+  unitTestClass      UnitTestClass        @relation(fields: [unitTestClassId], references: [id])
+  unitTestClassId    String
+  UnitTestFailedTest UnitTestFailedTest[]
 
   @@index([status, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }

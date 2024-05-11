@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ReqLogContent } from '@nx-prisma-nestjs-example/model/LogContent';
 import { ReqUnitTestResult } from '@nx-prisma-nestjs-example/model/UnitTests';
 import { TestStatus } from '@prisma/client';
+import { getPipelineResult } from '../utils/utils';
 
 @Injectable()
 export class BuildAnalysisService {
@@ -17,13 +18,7 @@ export class BuildAnalysisService {
   }
 
   async updateBuildLog(buildId: string, logContent: ReqLogContent) {
-    const pipelineResult = await this.prisma.pipelineResult.findUnique({
-      where: { buildId },
-    });
-
-    if (!pipelineResult) {
-      throw new Error('PipelineResult not found');
-    }
+    const pipelineResult = await this.getPipelineResult(buildId);
 
     const fullLog = logContent.log;
     const chunkSize = 128 * 1024;
@@ -56,13 +51,7 @@ export class BuildAnalysisService {
   }
 
   async updateUnitTestResult(buildId: string, requests: ReqUnitTestResult[]) {
-    const pipelineResult = await this.prisma.pipelineResult.findUnique({
-      where: { buildId },
-    });
-
-    if (!pipelineResult) {
-      throw new Error('PipelineResult not found');
-    }
+    const pipelineResult = await this.getPipelineResult(buildId);
 
     return this.prisma.$transaction(async (prisma) => {
       for (const request of requests) {
@@ -97,6 +86,7 @@ export class BuildAnalysisService {
             if (testFunction.status == TestStatus.FAILED) {
               await prisma.unitTestFailedTest.create({
                 data: {
+                  moduleName: createdUnitTestResult.moduleName,
                   className: testClass.className,
                   functionName: testFunction.functionName,
                   classId: testClass.id,
@@ -109,5 +99,9 @@ export class BuildAnalysisService {
         }
       }
     });
+  }
+
+  private async getPipelineResult(buildId: string) {
+    return await getPipelineResult(this.prisma, buildId);
   }
 }

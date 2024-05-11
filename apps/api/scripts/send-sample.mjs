@@ -15,9 +15,9 @@ function generateRandomString(size) {
 
 function generateUnitTestResults(moduleCount, classesCount, functionCount) {
   return Array.from({ length: moduleCount }, (_, index) => ({
-    moduleName: `:feature${(index % 3) + 1}`,
+    moduleName: `:feature${index + 1}`,
     testClasses: Array.from({ length: classesCount }, (__, classIndex) => {
-      const moduleName = `feature${(index % 3) + 1}`;
+      const moduleName = `feature${index + 1}`;
       return {
         className: `com.github.windsekirun.${moduleName}.class${classIndex}`,
         testFunctions: Array.from(
@@ -77,7 +77,7 @@ const sleep = (ms) => {
   });
 };
 
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 5; i++) {
   const buildId = 14000 + i;
   const buildLogContent = generateRandomString(800 * 1024);
   const unitTestResults = generateUnitTestResults(45, 7, 10);
@@ -86,5 +86,6 @@ for (let i = 0; i < 50; i++) {
   await registerBuild(id);
   await sleep(1000);
   await postBuildLog(id, buildLogContent);
+  await sleep(1000);
   await postUnitTestResults(id, unitTestResults);
 }

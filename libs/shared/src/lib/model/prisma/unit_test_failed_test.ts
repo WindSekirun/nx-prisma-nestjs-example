@@ -5,16 +5,19 @@ export class UnitTestFailedTest {
   id: string;
 
   @ApiProperty({ type: String })
-  classId: string;
-
-  @ApiProperty({ type: String })
   className: string;
 
   @ApiProperty({ type: String })
-  functionId: string;
+  functionName: string;
 
   @ApiProperty({ type: String })
-  functionName: string;
+  moduleName: string;
+
+  @ApiProperty({ type: String })
+  classId: string;
+
+  @ApiProperty({ type: String })
+  functionId: string;
 
   @ApiProperty({ type: String })
   unitTestResultId: string;
