@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ReqLogContent } from '@nx-prisma-nestjs-example/model/LogContent';
+import { ReqUnitTestResult } from '@nx-prisma-nestjs-example/model/UnitTests';
+import { TestStatus } from '@prisma/client';
 
 @Injectable()
 export class BuildAnalysisService {
@@ -50,6 +52,62 @@ export class BuildAnalysisService {
           })),
         },
       },
+    });
+  }
+
+  async updateUnitTestResult(buildId: string, requests: ReqUnitTestResult[]) {
+    const pipelineResult = await this.prisma.pipelineResult.findUnique({
+      where: { buildId },
+    });
+
+    if (!pipelineResult) {
+      throw new Error('PipelineResult not found');
+    }
+
+    return this.prisma.$transaction(async (prisma) => {
+      for (const request of requests) {
+        const createdUnitTestResult = await prisma.unitTestResult.create({
+          data: {
+            moduleName: request.moduleName,
+            pipelineResultId: pipelineResult.id,
+            unitTestClasses: {
+              create: request.testClasses.map((testClass) => ({
+                className: testClass.className,
+                testFunctions: {
+                  create: testClass.testFunctions.map((testFunction) => ({
+                    functionName: testFunction.functionName,
+                    status: testFunction.status as TestStatus,
+                    testLogs: testFunction.testLogs,
+                  })),
+                },
+              })),
+            },
+          },
+          include: {
+            unitTestClasses: {
+              include: {
+                testFunctions: true,
+              },
+            },
+          },
+        });
+
+        for (const testClass of createdUnitTestResult.unitTestClasses) {
+          for (const testFunction of testClass.testFunctions) {
+            if (testFunction.status == TestStatus.FAILED) {
+              await prisma.unitTestFailedTest.create({
+                data: {
+                  className: testClass.className,
+                  functionName: testFunction.functionName,
+                  classId: testClass.id,
+                  functionId: testFunction.id,
+                  unitTestResultId: createdUnitTestResult.id,
+                },
+              });
+            }
+          }
+        }
+      }
     });
   }
 }

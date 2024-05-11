@@ -1,6 +1,7 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { BuildAnalysisService } from './analysis.service';
 import { ReqLogContent } from '@nx-prisma-nestjs-example/model/LogContent';
+import { ReqUnitTestResult } from '@nx-prisma-nestjs-example/model/UnitTests';
 
 @Controller()
 export class BuildAnalysisController {
@@ -17,5 +18,13 @@ export class BuildAnalysisController {
     @Body() logContent: ReqLogContent
   ) {
     return this.buildAnalysisService.updateBuildLog(buildId, logContent);
+  }
+
+  @Post('build/:buildId/analysis/unit')
+  async updateUnitTestResult(
+    @Param('buildId') buildId: string,
+    @Body() requests: ReqUnitTestResult[]
+  ) {
+    return this.buildAnalysisService.updateUnitTestResult(buildId, requests);
   }
 }

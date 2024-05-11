@@ -56,7 +56,7 @@ model BuildLog {
 
 model BuildLogChunk {
   id         String   @id @default(cuid())
-  chunkIndex Int 
+  chunkIndex Int
   logContent String   @db.Text
   createdAt  DateTime @default(now())
 
@@ -67,12 +67,12 @@ model BuildLogChunk {
 }
 
 model UnitTestResult {
-  id            String      @id @default(cuid())
-  moduleName    String
-  failedTestIds String[]
-  testClasses   TestClass[] 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                  String               @id @default(cuid())
+  moduleName          String
+  unitTestFailedTests UnitTestFailedTest[]
+  unitTestClasses     UnitTestClass[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
   pipelineResult   PipelineResult @relation(fields: [pipelineResultId], references: [id])
   pipelineResultId String
@@ -80,12 +80,25 @@ model UnitTestResult {
   @@index([pipelineResultId, createdAt(sort: Desc)])
 }
 
-model TestClass {
-  id            String         @id @default(cuid())
+model UnitTestFailedTest {
+  id           String @id @default(cuid())
+  classId      String
+  className    String
+  functionId   String
+  functionName String
+
+  unitTestResult   UnitTestResult @relation(fields: [unitTestResultId], references: [id])
+  unitTestResultId String
+
+  @@index([classId, functionId])
+}
+
+model UnitTestClass {
+  id            String             @id @default(cuid())
   className     String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  testFunctions TestFunction[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  testFunctions UnitTestFunction[]
 
   unitTestResult   UnitTestResult @relation(fields: [unitTestResultId], references: [id])
   unitTestResultId String
@@ -93,7 +106,7 @@ model TestClass {
   @@index([unitTestResultId, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }
 
-model TestFunction {
+model UnitTestFunction {
   id           String     @id @default(cuid())
   functionName String
   status       TestStatus
@@ -101,8 +114,8 @@ model TestFunction {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  testClass   TestClass @relation(fields: [testClassId], references: [id])
-  testClassId String
+  unitTestClass   UnitTestClass @relation(fields: [unitTestClassId], references: [id])
+  unitTestClassId String
 
   @@index([status, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }

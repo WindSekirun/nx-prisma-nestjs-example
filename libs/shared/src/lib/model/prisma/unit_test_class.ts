@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UnitTestResult {
+export class UnitTestClass {
   @ApiProperty({ type: String })
   id: string;
 
   @ApiProperty({ type: String })
-  moduleName: string;
+  className: string;
 
   @ApiProperty({ type: Date })
   createdAt: Date;
@@ -14,5 +14,5 @@ export class UnitTestResult {
   updatedAt: Date;
 
   @ApiProperty({ type: String })
-  pipelineResultId: string;
+  unitTestResultId: string;
 }

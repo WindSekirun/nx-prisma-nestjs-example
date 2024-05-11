@@ -11,8 +11,9 @@ function extendClient(base: PrismaClient) {
       fields: [
         'PipelineResult:id',
         'UnitTestResult:id',
-        'TestClass:id',
-        'TestFunction:id',
+        'UnitTestFailedTest:id',
+        'UnitTestClass:id',
+        'UnitTestFunction:id',
         'BuildLog:id',
         'BuildLogChunk:id'
       ],

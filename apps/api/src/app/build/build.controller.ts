@@ -48,11 +48,6 @@ export class BuildController {
     return await this.buildService.getBuild(buildId);
   }
 
-  @Post('build/:buildId/analysis/unit')
-  async updateUnitTestResult(@Param('buildId') buildId: string, @Body() request: ReqUnitTestResult[]) {
-    Logger.debug(buildId);
-  }
-
   @Get('build/:buildId/failed/unit')
   async getFailedUnitTestList(@Param('buildId') buildId: string) {
     Logger.debug(buildId);

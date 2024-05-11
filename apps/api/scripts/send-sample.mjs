@@ -23,7 +23,7 @@ function generateUnitTestResults(moduleCount, classesCount, functionCount) {
         testFunctions: Array.from(
           { length: functionCount },
           (___, funcIndex) => {
-            const status = funcIndex < 1 ? 'FAILED' : 'SUCCESS';
+            const status = funcIndex < 1 ? 'FAILED' : 'PASSED';
             return {
               functionName: `t${funcIndex + 1}`,
               status: status,
@@ -77,14 +77,14 @@ const sleep = (ms) => {
   });
 };
 
-// const unitTestResults = generateUnitTestResults(45, 7, 10);
-
 for (let i = 0; i < 50; i++) {
   const buildId = 14000 + i;
   const buildLogContent = generateRandomString(800 * 1024);
+  const unitTestResults = generateUnitTestResults(45, 7, 10);
   const id = buildId.toString();
 
   await registerBuild(id);
   await sleep(1000);
   await postBuildLog(id, buildLogContent);
+  await postUnitTestResults(id, unitTestResults);
 }
