@@ -239,3 +239,44 @@ for (let i = 0; i < chunkCount; i++) {
   });
 }
 ```
+
+## 9. 시간 기반으로 쿼리할 때
+DB는 UTC, 클라이언트는 각자의 시간이라서 서버에서는 변환 작업이 필요할 수 있음
+```ts
+const startDate = DateTime.fromISO(date, { zone: 'Asia/Seoul' }).startOf('day').toUTC();
+const endDate = DateTime.fromISO(date, { zone: 'Asia/Seoul' }).endOf('day').toUTC();
+
+// in builder
+where: {
+  created_at: {
+    gte: startDate.toJSDate(),
+    lte: endDate.toJSDate(),
+  },
+}
+```
+
+## 10. 그 외?
+* 프론트에 얼마나의 기능이 들어갈지는 모르겠지만, '실패한 테스트 목록' 과 같은 것들은 저장시에 Join으로 넣어두면 좋을 것 같음: https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/910b0d172ae0eaf9b57283290c361e971582b9ea
+  * 이 프로젝트는 어디까지나 읽기가 더 많고, 쓰기는 별로 없으므로...
+* 
+
+## 결과
+
+![](docs/swagger-final.png)
+
+## 고민 포인트들 
+실제로 개발에 적용하기 위해서는 아래 사항들이 고려되어야 할 것 같음.
+
+* 간소화된 모델로 테스트했지만, 실제는 각 모델에 데이터의 종류가 많음.
+* UI 테스트도 보관해야 함. 로그의 정보들은 적극적으로 청크를 해야..
+  * 간헐적인 테스트에 대한 통게를 제공하려면, 클래스 기반의 데이터뿐만이 아니라 기기에 대한 데이터도 같이 보여주어야 하지 않을까..?
+  * 오히려 디바이스마다 필터하는 것도 필요할지도.
+* 용량을 많이 차지하므로, Purge 도 고려가 되어야 할 것 같음. 
+  * @nestjs/schedule cron 으로 `@Cron('0 0 * * 6')` 때 자동으로 수행되게 할 수 있음
+  * 파일 업로드의 경우에도 DB Record로 넣고,
+  * 실제 어느 주기로 지울 지는 Environment variables로 조정할 수 있게 하면 될듯.
+  * 단, 오래된 로그 지우기와 영상 파일 지우기의 일자가 일치할 필요는 없음. 오히려 다르게 가져갈 수 있게 설계하는게 나중에도 더 유연함
+  * 이러한 설정등은 설정 페이지에서 제공할 수 있게 하는게 좋지 않을까..? 가령 SettingsKeyValue 같은 느낌으로.
+    * 이걸 하면 seed 기능도 필요할듯? (pre-defined 되어야 하는 데이터니)
+* 모니터링용 Prometheus Exporter도 제공을 해야 할 것 같은데, 어떤 데이터를 모니터링의 대상으로 삼을 지는 필요
+* 피쳐 리스트 작성해보면서, 실제 데이터베이스 설계 전에 어떠한 정보들을 제공할 수 있는지 어느정도 확정하는게 좋을듯. 일단 JUnit + UI 리포트 파싱해서 어떠한 정보를 DB에 넣을 수 있는지는 

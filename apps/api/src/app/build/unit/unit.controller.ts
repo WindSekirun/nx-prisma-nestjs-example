@@ -5,6 +5,11 @@ import { BuildUnitTestService } from './unit.service';
 export class BuildUnitTestController {
   constructor(private readonly buildUnitTestService: BuildUnitTestService) {}
 
+  @Get('build/:buildId/unit')
+  getUnitTestResults(@Param('buildId') buildId: string) {
+    return this.buildUnitTestService.getUnitTestResults(buildId);
+  }
+
   @Get('build/:buildId/unit/failed')
   async getFailedUnitTestList(
     @Param('buildId') buildId: string,
@@ -22,12 +27,7 @@ export class BuildUnitTestController {
     );
   }
 
-  @Get('build/:buildId/unit')
-  getUnitTestResults(@Param('buildId') buildId: string) {
-    return this.buildUnitTestService.getUnitTestResults(buildId);
-  }
-
-  @Get('build/:buildId/unit/modules/:moduleName')
+  @Get('build/:buildId/unit/module/:moduleName')
   getUnitTestClasses(
     @Param('buildId') buildId: string,
     @Query('moduleName') moduleName: string
@@ -35,7 +35,7 @@ export class BuildUnitTestController {
     return this.buildUnitTestService.getUnitTestClasses(buildId, moduleName);
   }
 
-  @Get('build/:buildId/unit/modules/:moduleName/:classId')
+  @Get('build/:buildId/unit/module/:moduleName/:classId')
   getUnitTestFunctions(
     @Param('buildId') buildId: string,
     @Query('moduleName') moduleName: string,
@@ -45,21 +45,6 @@ export class BuildUnitTestController {
       buildId,
       moduleName,
       classId
-    );
-  }
-
-  @Get('build/:buildId/unit/modules/:moduleName/:classId/:functionId')
-  getUnitTestFunctionDetails(
-    @Param('buildId') buildId: string,
-    @Query('moduleName') moduleName: string,
-    @Param('classId') classId: string,
-    @Param('functionId') functionId: string
-  ) {
-    return this.buildUnitTestService.getUnitTestFunctionDetails(
-      buildId,
-      moduleName,
-      classId,
-      functionId
     );
   }
 }

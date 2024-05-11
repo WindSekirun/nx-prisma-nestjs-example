@@ -77,31 +77,7 @@ export class BuildUnitTestService {
         id: classId,
       },
       include: {
-        testFunctions: {
-          select: {
-            id: true,
-            functionName: true,
-            status: true,
-          },
-        },
-      },
-    });
-  }
-
-  async getUnitTestFunctionDetails(
-    buildId: string,
-    moduleName: string,
-    classId: string,
-    functionId: string
-  ) {
-    const pipelineResult = await this.getPipelineResult(buildId);
-    return this.prisma.unitTestFunction.findUnique({
-      where: {
-        id: functionId,
-        unitTestClass: {
-          id: classId,
-          unitTestResult: { pipelineResultId: pipelineResult.id, moduleName },
-        },
+        testFunctions: true
       },
     });
   }
