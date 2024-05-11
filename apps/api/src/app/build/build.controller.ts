@@ -11,37 +11,30 @@ import {
 import { BuildService } from './build.service';
 import {
   ApiExtraModels,
-  ApiQuery,
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { PipelineResult } from '@nx-prisma-nestjs-example/model/prisma/pipeline_result';
-import { LogContent } from '@nx-prisma-nestjs-example/model/LogContent';
+import { ReqUnitTestResult } from '@nx-prisma-nestjs-example/model/UnitTests';
 
 @Controller()
 export class BuildController {
   constructor(private readonly buildService: BuildService) {}
 
-  @Post('build/:buildId/analysis/register')
-  async registerResult(@Param('buildId') buildId: string) {
-    return this.buildService.registerBuild(buildId);
-  }
-
-  @Post('build/:buildId/analysis/log')
-  async updateLog(
-    @Param('buildId') buildId: string,
-    @Body() logContent: LogContent
-  ) {
-    return this.buildService.updateBuildLog(buildId, logContent);
-  }
-
-  @Post('build/:buildId/analysis/unit')
-  async updateUnitTestResult(@Param('buildId') buildId: string) {
-    Logger.debug(buildId);
-  }
-
+  @ApiExtraModels(PipelineResult)
+  @ApiResponse({
+    status: 200,
+    schema: {
+      $ref: getSchemaPath(PipelineResult),
+    },
+  })
   @Get('build')
-  async getBuildList() {}
+  async getBuildList(
+    @Query('cursor') cursor?: string,
+    @Query('limit', new ParseIntPipe()) limit?: number
+  ) {
+    return this.buildService.getBuildList(cursor, limit)
+  }
 
   @ApiExtraModels(PipelineResult)
   @ApiResponse({
@@ -52,27 +45,16 @@ export class BuildController {
   })
   @Get('build/:buildId')
   async getBuild(@Param('buildId') buildId: string) {
+    return await this.buildService.getBuild(buildId);
+  }
+
+  @Post('build/:buildId/analysis/unit')
+  async updateUnitTestResult(@Param('buildId') buildId: string, @Body() request: ReqUnitTestResult[]) {
     Logger.debug(buildId);
   }
 
   @Get('build/:buildId/failed/unit')
   async getFailedUnitTestList(@Param('buildId') buildId: string) {
     Logger.debug(buildId);
-  }
-
-  @Get('build/:buildId/log')
-  @ApiQuery({ name: 'page', required: false, type: 'number' })
-  @ApiQuery({
-    name: 'orderBy',
-    required: false,
-    type: 'string',
-    description: '"asc" and "desc" are valid.',
-  })
-  async getLogChunk(
-    @Param('buildId') id: string,
-    @Query('page', new ParseIntPipe()) page?: number,
-    @Query('orderBy') orderBy?: 'asc' | 'desc'
-  ) {
-    return this.buildService.getBuildLogChunk(id, page || 1, orderBy);
   }
 }

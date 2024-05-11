@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class LogContent {
+export class ReqLogContent {
   @ApiProperty({ type: String })
   log: string;
 }

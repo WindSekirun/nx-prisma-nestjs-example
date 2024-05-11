@@ -13,6 +13,29 @@ function generateRandomString(size) {
   return result;
 }
 
+function generateUnitTestResults(moduleCount, classesCount, functionCount) {
+  return Array.from({ length: moduleCount }, (_, index) => ({
+    moduleName: `:feature${(index % 3) + 1}`,
+    testClasses: Array.from({ length: classesCount }, (__, classIndex) => {
+      const moduleName = `feature${(index % 3) + 1}`;
+      return {
+        className: `com.github.windsekirun.${moduleName}.class${classIndex}`,
+        testFunctions: Array.from(
+          { length: functionCount },
+          (___, funcIndex) => {
+            const status = funcIndex < 1 ? 'FAILED' : 'SUCCESS';
+            return {
+              functionName: `t${funcIndex + 1}`,
+              status: status,
+              testLogs: status === 'FAILED' ? generateRandomString(1024) : '',
+            };
+          }
+        ),
+      };
+    }),
+  }));
+}
+
 async function postBuildLog(buildId, logContent) {
   try {
     const response = await axios.post(
@@ -25,7 +48,21 @@ async function postBuildLog(buildId, logContent) {
   }
 }
 
-const buildLogContent = generateRandomString(800 * 1024);
-const buildId = '14000';
+async function postBuildLog(buildId, logContent) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/build/${buildId}/analysis/unit`,
+      { log: logContent }
+    );
+    console.log('BuildLog saved:', response.data);
+  } catch (error) {
+    console.error('Failed to save BuildLog:', error);
+  }
+}
 
-postBuildLog(buildId, buildLogContent);
+const buildId = '14000';
+const buildLogContent = generateRandomString(800 * 1024);
+const unitTestResults = generateUnitTestResults(45, 7, 10);
+
+// postBuildLog(buildId, buildLogContent);
+postBuildLog(buildId, unitTestResults);

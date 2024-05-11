@@ -70,7 +70,7 @@ model UnitTestResult {
   id            String      @id @default(cuid())
   moduleName    String
   failedTestIds String[]
-  testClasses   TestClass[]
+  testClasses   TestClass[] 
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
