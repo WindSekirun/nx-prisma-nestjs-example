@@ -14,7 +14,7 @@
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",
     "@prisma/client": "5.5.2",
-    "axios": "^1.6.0",
+    "axios": "^1.6.8",
     "prisma-extension-cuid2": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
@@ -50,7 +50,7 @@
     "prisma": "5.5.2",
     "prisma-erd-generator": "^1.11.2",
     "ts-jest": "^29.1.0",
-    "ts-node": "10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "~5.4.2",
     "webpack-cli": "^5.1.4"
   }

@@ -3,6 +3,7 @@
     "nrwl.angular-console",
     "esbenp.prettier-vscode",
     "firsttris.vscode-jest-runner",
-    "Prisma.prisma"
+    "Prisma.prisma",
+    "bruno-api-client.bruno"
   ]
 }
