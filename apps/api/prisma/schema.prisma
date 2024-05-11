@@ -31,7 +31,7 @@ model PipelineResult {
   unitTestResults UnitTestResult[]
   BuildLog        BuildLog?
 
-  @@index([buildId, createdAt(sort: Desc)])
+  @@index([buildId, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }
 
 model BuildLog {
@@ -70,7 +70,7 @@ model TestClass {
   unitTestResult   UnitTestResult @relation(fields: [unitTestResultId], references: [id])
   unitTestResultId String
 
-  @@index([unitTestResultId, createdAt(sort: Desc)])
+  @@index([unitTestResultId, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }
 
 model TestFunction {
@@ -84,5 +84,5 @@ model TestFunction {
   testClass   TestClass @relation(fields: [testClassId], references: [id])
   testClassId String
 
-  @@index([status, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc), updatedAt(sort: Desc)])
 }
