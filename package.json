@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "nx serve api",
     "migrate": "nx prisma-migrate api dev --name=init",
-    "deploy": "nx prisma-deploy api"
+    "deploy": "nx prisma-deploy api",
+    "generate": "nx prisma-generate api"
   },
   "private": true,
   "dependencies": {
@@ -14,6 +15,7 @@
     "@nestjs/platform-express": "^10.0.2",
     "@prisma/client": "5.5.2",
     "axios": "^1.6.0",
+    "prisma-extension-cuid2": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0"

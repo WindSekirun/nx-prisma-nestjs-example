@@ -2,8 +2,87 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../../../docs/ERD.svg"
+}
+
+generator erdPng {
+  provider = "prisma-erd-generator"
+  output   = "../../../docs/ERD.png"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+enum TestStatus {
+  PASSED
+  FAILED
+}
+
+model PipelineResult {
+  id        String   @id @default(cuid())
+  buildId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  unitTestResults UnitTestResult[]
+  BuildLog        BuildLog?
+
+  @@index([buildId, createdAt(sort: Desc)])
+}
+
+model BuildLog {
+  id        String   @id @default(cuid())
+  log       String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pipelineResult   PipelineResult @relation(fields: [pipelineResultId], references: [id])
+  pipelineResultId String         @unique
+
+  @@index([pipelineResultId])
+}
+
+model UnitTestResult {
+  id            String      @id @default(cuid())
+  moduleName    String
+  failedTestIds String[]
+  testClasses   TestClass[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  pipelineResult   PipelineResult @relation(fields: [pipelineResultId], references: [id])
+  pipelineResultId String
+
+  @@index([pipelineResultId, createdAt(sort: Desc)])
+}
+
+model TestClass {
+  id            String         @id @default(cuid())
+  className     String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  testFunctions TestFunction[]
+
+  unitTestResult   UnitTestResult @relation(fields: [unitTestResultId], references: [id])
+  unitTestResultId String
+
+  @@index([unitTestResultId, createdAt(sort: Desc)])
+}
+
+model TestFunction {
+  id           String     @id @default(cuid())
+  functionName String
+  status       TestStatus
+  testLogs     String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  testClass   TestClass @relation(fields: [testClassId], references: [id])
+  testClassId String
+
+  @@index([status, createdAt(sort: Desc)])
+}
