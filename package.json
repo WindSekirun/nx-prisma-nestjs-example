@@ -6,7 +6,8 @@
     "serve": "nx serve api",
     "migrate": "nx prisma-migrate api dev --name=init",
     "deploy": "nx prisma-deploy api",
-    "generate": "nx prisma-generate api"
+    "generate": "nx prisma-generate api",
+    "send-sample": "nx run api:scripts:send-sample"
   },
   "private": true,
   "dependencies": {

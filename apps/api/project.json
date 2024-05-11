@@ -5,6 +5,14 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "scripts": {
+      "executor": "nx:run-commands",
+      "configurations": {
+        "send-sample": {
+          "commands": ["node apps/api/scripts/send-sample.mjs"]
+        }
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
