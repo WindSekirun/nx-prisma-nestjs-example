@@ -19,7 +19,7 @@
 
 ## 1. Prisma 기능 확장
 
-- https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/e5b892b868a1ef29ae35034b8e0cef8ccb43a051
+- https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/26ff258f2d4fc65e02651e09e8b2402fed618f0a
 - refer: https://github.com/prisma/prisma/issues/18628#issuecomment-1975271421
 
 Prisma에서 기본으로 제공하지 않는 기능이나, 후술할 cuid2를 위해 Prisma의 기능을 확장시킬 수 있음.
@@ -27,7 +27,7 @@ Prisma에서 기본으로 제공하지 않는 기능이나, 후술할 cuid2를 �
 
 ## 2. cuid2
 
-- https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/a229e4df4293eed6ea761f70bb4d58d37a0543d6#diff-0ea972252d10343108d3a06435b504515bda939ee9d3aea2a247b363ba7f6d8eR8
+- https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/409b360661f8faaad1c623a2975930b55fb8e000#diff-0ea972252d10343108d3a06435b504515bda939ee9d3aea2a247b363ba7f6d8eR8
 
 autoincrement int 대신 cuid를 사용할 수 있는데, 아래와 같은 포인트들이 있음
 
@@ -77,7 +77,7 @@ svg, md, png 등 다양한 포맷이 제공되고, 여러 개의 확장자로 �
 
 ## 4. 데이터 구조에 따른 초기 Index
 
-- https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/a229e4df4293eed6ea761f70bb4d58d37a0543d6#diff-8868ba6f6bd7aa7823c3f1321cd671c494f85afdffb5df12ed2906d049a40adaR34
+- https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/409b360661f8faaad1c623a2975930b55fb8e000#diff-8868ba6f6bd7aa7823c3f1321cd671c494f85afdffb5df12ed2906d049a40adaR60
 
 상술한 기본 데이터 구조에서, 파이프라인을 수행하는 Agent의 고유 ID가 Key로 되고,
 (여기에서는 BUILD_ID라고 가정)
@@ -103,7 +103,7 @@ Index 문법은 다음과 같음
 - `@@index([unitTestResultId])`
 
 ## 5. nx workspace로 돌아가는 스크립트 파일 만들기
-* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/660f3a956deae9ce178507673f8727057758ab30
+* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/a2c05015afdf47ad87879b2607ff80f1015baff9
 
 axios 등 nx workspace에 설치된 의존성을 필요로 하는 스크립트를 실행해야 하는 경우, project.json에 아래 내용을 기재할 수 있음
 
@@ -128,7 +128,7 @@ axios 등 nx workspace에 설치된 의존성을 필요로 하는 스크립트�
 실행은 `nx run api:scripts:send-sample`
 
 ## 6. 라이브러리 프로젝트
-* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/1f93107259d04f67651ab7d4d7608c5cd0c08f10
+* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/629b4e1eb6761d08b99a004eae4beb56505e4342
 프론트 + 백엔드가 같은 언어일 경우, 모델이나 유틸 등을 중복으로 선언하지 않고 사용할 수 있는데, 이 것이 nx workspace를 사용하는 이유이기도 함
 
 `nx g @nx/js:lib libs/{name}`
@@ -140,7 +140,7 @@ import { shared } from '@nx-prisma-nestjs-example/shared'
 ```
 
 ## 7. prisma-class-generator
-
+* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/a0063b9509c6efd1cd61ac8bdc03b8099ef87cc7
 프론트 + 백엔드가 같은 언어이고, DB에서 나온 모델을 같이 사용하고 싶을 때에는 https://github.com/kimjbstar/prisma-class-generator 를 사용할 수 있음.
 
 ```

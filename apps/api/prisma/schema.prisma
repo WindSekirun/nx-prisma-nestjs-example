@@ -13,10 +13,10 @@ generator erdPng {
 }
 
 generator prismaClassGenerator {
-  provider = "prisma-class-generator"
-  output   = "../../../libs/shared/src/lib/model/prisma"
-  dryRun   = false
-  useSwagger = true
+  provider               = "prisma-class-generator"
+  output                 = "../../../libs/shared/src/lib/model/prisma"
+  dryRun                 = false
+  useSwagger             = true
   separateRelationFields = true
 }
 
@@ -43,15 +43,27 @@ model PipelineResult {
 }
 
 model BuildLog {
-  id        String   @id @default(cuid())
-  log       String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String          @id @default(cuid())
+  logChunks BuildLogChunk[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
   pipelineResult   PipelineResult @relation(fields: [pipelineResultId], references: [id])
   pipelineResultId String         @unique
 
   @@index([pipelineResultId])
+}
+
+model BuildLogChunk {
+  id         String   @id @default(cuid())
+  chunkIndex Int 
+  logContent String   @db.Text
+  createdAt  DateTime @default(now())
+
+  buildLog   BuildLog @relation(fields: [buildLogId], references: [id])
+  buildLogId String
+
+  @@index([buildLogId, chunkIndex], name: "idx_buildLog_chunkIndex")
 }
 
 model UnitTestResult {

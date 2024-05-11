@@ -4,9 +4,6 @@ export class BuildLog {
   @ApiProperty({ type: String })
   id: string;
 
-  @ApiProperty({ type: String })
-  log: string;
-
   @ApiProperty({ type: Date })
   createdAt: Date;
 

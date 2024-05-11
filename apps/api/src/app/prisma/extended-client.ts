@@ -14,6 +14,7 @@ function extendClient(base: PrismaClient) {
         'TestClass:id',
         'TestFunction:id',
         'BuildLog:id',
+        'BuildLogChunk:id'
       ],
     })
   );
