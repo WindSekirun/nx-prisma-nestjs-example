@@ -31,7 +31,7 @@ export class BuildController {
   @Get('build')
   async getBuildList(
     @Query('cursor') cursor?: string,
-    @Query('limit', new ParseIntPipe()) limit?: number
+    @Query('limit') limit?: string
   ) {
     return this.buildService.getBuildList(cursor, limit)
   }

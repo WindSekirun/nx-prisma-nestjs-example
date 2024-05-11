@@ -5,7 +5,7 @@ import { BuildModule } from './build/build.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [BuildModule, PrismaModule],
+  imports: [BuildModule, PrismaModule,],
   controllers: [],
   providers: [AppService],
 })

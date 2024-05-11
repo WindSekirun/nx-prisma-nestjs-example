@@ -36,6 +36,17 @@ function generateUnitTestResults(moduleCount, classesCount, functionCount) {
   }));
 }
 
+async function registerBuild(buildId) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/build/${buildId}/analysis/register`
+    );
+    console.log('BuildLog saved:', response.data);
+  } catch (error) {
+    console.error('Failed to save BuildLog:', error);
+  }
+}
+
 async function postBuildLog(buildId, logContent) {
   try {
     const response = await axios.post(
@@ -48,21 +59,32 @@ async function postBuildLog(buildId, logContent) {
   }
 }
 
-async function postBuildLog(buildId, logContent) {
+async function postUnitTestResults(buildId, unitTestResults) {
   try {
     const response = await axios.post(
-      `${BASE_URL}/api/build/${buildId}/analysis/unit`,
-      { log: logContent }
+      `${BASE_URL}/build/${buildId}/analysis/unit`,
+      unitTestResults
     );
-    console.log('BuildLog saved:', response.data);
+    console.log('UnitTestResults saved:', response.data);
   } catch (error) {
-    console.error('Failed to save BuildLog:', error);
+    console.error('Failed to save UnitTestResults:', error);
   }
 }
 
-const buildId = '14000';
-const buildLogContent = generateRandomString(800 * 1024);
-const unitTestResults = generateUnitTestResults(45, 7, 10);
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+};
 
-// postBuildLog(buildId, buildLogContent);
-postBuildLog(buildId, unitTestResults);
+// const unitTestResults = generateUnitTestResults(45, 7, 10);
+
+for (let i = 0; i < 50; i++) {
+  const buildId = 14000 + i;
+  const buildLogContent = generateRandomString(800 * 1024);
+  const id = buildId.toString();
+
+  await registerBuild(id);
+  await sleep(1000);
+  await postBuildLog(id, buildLogContent);
+}

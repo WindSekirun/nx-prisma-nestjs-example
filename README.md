@@ -197,3 +197,45 @@ async getBuild(@Param('buildId') buildId: string)
 | Schemas | API Docs |
 | - | - |
 | ![](docs/swagger-api-property-1.png) | ![](docs/swagger-api-property-2.png) |
+
+## 8. Chunk
+* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/8ca64a69a0c0810928c48e58dbbf815b7810fb2a
+로그 등 데이터의 길이가 크고, 일반적인 사용성에서 맨 밑에 있는 것을 우선으로 본다고 했을 때, 
+Chunk를 해서 저장하고 이를 가져오는 전략을 취할 수 있음
+
+```prisma
+model BuildLog {
+  logChunks BuildLogChunk[]
+  ...
+}
+
+model BuildLogChunk {
+  id         String   @id @default(cuid())
+  chunkIndex Int 
+  logContent String   @db.Text
+  createdAt  DateTime @default(now())
+
+  buildLog   BuildLog @relation(fields: [buildLogId], references: [id])
+  buildLogId String
+
+  @@index([buildLogId, chunkIndex], name: "idx_buildLog_chunkIndex") // 순서도 같이 인덱싱하도록 구현
+}
+```
+
+저장할 때에는, substring로 연산해서 생성할 수 있음
+```ts
+const fullLog = logContent.log;
+const chunkSize = 128 * 1024; // 128KB
+const chunkCount = Math.ceil(fullLog.length / chunkSize);
+const chunked: { i: number; log: string }[] = [];
+for (let i = 0; i < chunkCount; i++) {
+  const chunkContent = fullLog.substring(
+    i * chunkSize,
+    Math.min(start + chunkSize, fullLog.length)
+  );
+  chunked.push({
+    i: i,
+    log: chunkContent,
+  });
+}
+```
