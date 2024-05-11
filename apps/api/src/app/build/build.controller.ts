@@ -1,5 +1,7 @@
 import { Controller, Get, Logger, Param, Post } from '@nestjs/common';
 import { BuildService } from './build.service';
+import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import { PipelineResult } from '@nx-prisma-nestjs-example/model/prisma/pipeline_result'
 
 @Controller()
 export class BuildController {
@@ -25,6 +27,13 @@ export class BuildController {
   async getBuildList() {
   }
 
+  @ApiExtraModels(PipelineResult)
+  @ApiResponse({
+     status: 200,
+     schema: {
+       $ref: getSchemaPath(PipelineResult),
+     },
+   })
   @Get('build/:buildId')
   async getBuild(@Param('buildId') buildId: string) {
     Logger.debug(buildId);

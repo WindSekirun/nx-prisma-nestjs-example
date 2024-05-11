@@ -12,6 +12,14 @@ generator erdPng {
   output   = "../../../docs/ERD.png"
 }
 
+generator prismaClassGenerator {
+  provider = "prisma-class-generator"
+  output   = "../../../libs/shared/src/lib/model/prisma"
+  dryRun   = false
+  useSwagger = true
+  separateRelationFields = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

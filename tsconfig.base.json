@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@nx-prisma-nestjs-example/shared": ["libs/shared/src/index.ts"]
+      "@nx-prisma-nestjs-example/model/*": ["libs/shared/src/lib/model/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

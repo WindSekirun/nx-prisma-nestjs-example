@@ -61,7 +61,21 @@ base.$extends(
   );
 ```
 
-## 3. 데이터 구조에 따른 초기 Index
+## 3. ERD
+https://github.com/keonik/prisma-erd-generator 를 사용하여 Prisma Schema를 기반으로 자동 생성할 수 있음
+
+```
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../../../docs/ERD.svg"
+}
+```
+
+![](docs/ERD.png)
+
+svg, md, png 등 다양한 포맷이 제공되고, 여러 개의 확장자로 출력하고 싶다면 복붙 후 generator의 이름만 변경하면 OK
+
+## 4. 데이터 구조에 따른 초기 Index
 
 - https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/a229e4df4293eed6ea761f70bb4d58d37a0543d6#diff-8868ba6f6bd7aa7823c3f1321cd671c494f85afdffb5df12ed2906d049a40adaR34
 
@@ -88,7 +102,7 @@ Index 문법은 다음과 같음
 - `unitTestResultId String`
 - `@@index([unitTestResultId])`
 
-## 4. nx workspace로 돌아가는 스크립트 파일 만들기
+## 5. nx workspace로 돌아가는 스크립트 파일 만들기
 * https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/660f3a956deae9ce178507673f8727057758ab30
 
 axios 등 nx workspace에 설치된 의존성을 필요로 하는 스크립트를 실행해야 하는 경우, project.json에 아래 내용을 기재할 수 있음
@@ -113,7 +127,8 @@ axios 등 nx workspace에 설치된 의존성을 필요로 하는 스크립트�
 
 실행은 `nx run api:scripts:send-sample`
 
-## 5. 라이브러리 프로젝트
+## 6. 라이브러리 프로젝트
+* https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/1f93107259d04f67651ab7d4d7608c5cd0c08f10
 프론트 + 백엔드가 같은 언어일 경우, 모델이나 유틸 등을 중복으로 선언하지 않고 사용할 수 있는데, 이 것이 nx workspace를 사용하는 이유이기도 함
 
 `nx g @nx/js:lib libs/{name}`
@@ -123,3 +138,62 @@ axios 등 nx workspace에 설치된 의존성을 필요로 하는 스크립트�
 ```ts
 import { shared } from '@nx-prisma-nestjs-example/shared'
 ```
+
+## 7. prisma-class-generator
+
+프론트 + 백엔드가 같은 언어이고, DB에서 나온 모델을 같이 사용하고 싶을 때에는 https://github.com/kimjbstar/prisma-class-generator 를 사용할 수 있음.
+
+```
+generator prismaClassGenerator {
+  provider = "prisma-class-generator"
+  output   = "../../../libs/shared/src/lib/model/prisma" // 6번에서 생성한 라이브러리 프로젝트로 이동
+  dryRun   = false // 기본값 true로 이 옵션을 사용할 경우 실제로 파일이 생성되지 않음
+  useSwagger = true // 기본값 true로 swagger를 api docs로 사용할 경우 유용. 
+  separateRelationFields = true // Relations 관련한 값을 별도 파일로 분리
+}
+```
+
+이 중, Swagger 옵션에 대해서는... 
+rootProject/tsconfig.base.json
+```json
+{
+  ...
+  "compilerOptions": {
+    "paths": {
+      "@nx-prisma-nestjs-example/model/*": ["libs/shared/src/lib/model/*"]
+    }
+  }
+  ...
+}
+```
+
+api/main.ts
+```ts
+const config = new DocumentBuilder()
+    .setTitle('API Example')
+    .setDescription('api examples')
+    .setVersion('1.0')
+    .build();
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('api', app, document);
+```
+
+controller
+```ts
+import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import { PipelineResult } from '@nx-prisma-nestjs-example/model/prisma/pipeline_result'
+
+@ApiExtraModels(PipelineResult)
+@ApiResponse({
+  status: 200,
+    schema: {
+      $ref: getSchemaPath(PipelineResult),
+    },
+})
+@Get('build/:buildId')
+async getBuild(@Param('buildId') buildId: string)
+```
+
+| Schemas | API Docs |
+| - | - |
+| ![](docs/swagger-api-property-1.png) | ![](docs/swagger-api-property-2.png) |
