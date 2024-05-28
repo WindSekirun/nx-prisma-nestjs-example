@@ -255,11 +255,9 @@ where: {
 }
 ```
 
-## 10. 그 외?
-* 프론트에 얼마나의 기능이 들어갈지는 모르겠지만, '실패한 테스트 목록' 과 같은 것들은 저장시에 Join으로 넣어두면 좋을 것 같음: https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/910b0d172ae0eaf9b57283290c361e971582b9ea
-  * 이 프로젝트는 어디까지나 읽기가 더 많고, 쓰기는 별로 없으므로...
+## 10. Full-Text search with meilisearch
+https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/470ec72302f36c77b1636fb5e45203102727d7ac
 
-## 11. Full-Text search with meilisearch
 GIN Query를 사용해서 FTS를 구현할 수는 있지만, 일단 여기에서는 한국어도 잘 지원한다고 하는 meilisearch를 써보기로 함 (나름 신흥강자?)
 
 ### 설치
@@ -348,6 +346,10 @@ const result = await index.search(query, searchParams);
   - 2번에서 생성한 문맥 그룹을 시작 줄 순서로 정렬.
   - 각 그룹의 로그 내용을 추출하여 하나의 문자열로 결합 (highlightLines가 있으면 그것을 사용하고, 없으면 lines 사용).
   - 각 그룹 간에는 \n...\n으로 구분.
+
+## 11. 그 외?
+* 프론트에 얼마나의 기능이 들어갈지는 모르겠지만, '실패한 테스트 목록' 과 같은 것들은 저장시에 Join으로 넣어두면 좋을 것 같음: https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/910b0d172ae0eaf9b57283290c361e971582b9ea
+  * 이 프로젝트는 어디까지나 읽기가 더 많고, 쓰기는 별로 없으므로...
 
 ## 결과
 
