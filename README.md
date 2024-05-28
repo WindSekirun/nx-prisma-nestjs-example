@@ -265,7 +265,7 @@ GIN Query를 사용해서 FTS를 구현할 수는 있지만, 일단 여기에서
 ### 설치
 Docker-compose로 간단히 올릴 수 있음
 
-```
+```yaml
 meilisearch:
   container_name: meilisearch
   image: getmeili/meilisearch:v1.8
@@ -287,16 +287,14 @@ meilisearch:
 
 ### 인덱스
 
-
-
 onModuleInit
-```
+```ts
 const index = this.client.index('build_log_chunks');
 await index.updateSortableAttributes(['createdAt']);
 ```
 
 실제 생성
-```
+```ts
 const documents = chunks.map((chunk) => ({
   id: chunk.id,
   chunkIndex: chunk.chunkIndex,
@@ -317,7 +315,7 @@ await index.addDocuments(documents, { primaryKey: 'id' });
 ### 검색
 하이라이트 기능, Pagination 기능 모두 간단한 옵션으로 제공됨.
 
-```
+```ts
 const index = this.client.index('build_log_chunks');
 const searchParams = {
   limit: limit, // 한번에 가져올 갯수
@@ -329,9 +327,27 @@ const searchParams = {
 const result = await index.search(query, searchParams);
 ```
 
-로 하면, _formatted.logContent 로 `djqS 3nYf <em>CG4m</em>` 과 같이 하이라이팅 된 부분이 포함되면서 / _matchesPosition 도 `{ "start": 10, "length": 4}` 나옴.
+로 하면, _formatted.logContent 로 `djqS 3nYf <em>CG4m</em>` 과 같이 하이라이팅 된 부분이 포함되면서 / _matchesPosition 도 `{ "start": 10, "length": 4}` 가 나옴.
 
-전체 텍스트가 나오는 부분은.. 로그 문맥을 살펴봐서 주변의 일정 부분만 나오도록 애플리케이션 단에서 하면 되지 않을까 싶은데, 그 부분은 차차 작성해보는거로.
+물론, 한 텍스트에 여러 개가 있으면 여러 개가 하이라이트는 됨.
+
+다만, _formatted.logContent 는 전체 텍스트를 기준으로 하이라이트를 먹이기 때문에,
+애플리케이션 단에서 아래와 같은 작업을 하면 되지 않을까 하는 생각 **(테스트 안해봄)**
+
+1. 로그 내용 분할
+  - hit.logContent를 '\n'으로 분할하여 lines 생성.
+  - hit._formatted?.logContent를 '\n'으로 분할하여 highlightLines 생성 (하이라이트된 내용이 없으면 undefined).
+2. 문맥 그룹 생성
+  - matchesPosition와 lines를 중첩으로 순회하면서 position.start가 현재 줄의 문자 수 범위 내에 있는지 확인.
+  - position.start가 현재 줄에 속하면 현재 줄을 중심으로 -3 ~ 3 범위를 선택 (contextStart, contextEnd).
+  - 문맥 그룹을 담고 있는 groups에서, group.start 또는 group.end가 contextStart와 contextEnd 사이에 있는지 체크.
+    - 있으면 기존 그룹의 start와 end를 Math.min 또는 Math.max를 사용하여 수정.
+    - 없으면 새로운 그룹을 추가.
+  - 이를 matchesPosition의 모든 위치 정보에 대해 반복.
+3. 문맥 추출
+  - 2번에서 생성한 문맥 그룹을 시작 줄 순서로 정렬.
+  - 각 그룹의 로그 내용을 추출하여 하나의 문자열로 결합 (highlightLines가 있으면 그것을 사용하고, 없으면 lines 사용).
+  - 각 그룹 간에는 \n...\n으로 구분.
 
 ## 결과
 
