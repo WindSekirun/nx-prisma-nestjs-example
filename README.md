@@ -258,7 +258,15 @@ where: {
 ## 10. 그 외?
 * 프론트에 얼마나의 기능이 들어갈지는 모르겠지만, '실패한 테스트 목록' 과 같은 것들은 저장시에 Join으로 넣어두면 좋을 것 같음: https://github.com/WindSekirun/nx-prisma-nestjs-example/commit/910b0d172ae0eaf9b57283290c361e971582b9ea
   * 이 프로젝트는 어디까지나 읽기가 더 많고, 쓰기는 별로 없으므로...
-* 
+
+## 11. Full-Text search with meilisearch
+GIN Query를 사용해서 FTS를 구현할 수는 있지만, 일단 여기에서는 한국어도 잘 지원한다고 하는 meilisearch를 써보기로 함
+* 마스터키: docker-compose로 올릴 때의 MEILI_MASTER_KEY
+* Admin API Key: `curl -X GET 'http://localhost:7700/keys' -H 'Authorization: Bearer {MASTER_KEY}' | jq` 의, [1].key
+
+* localhost:3000/api/log/index
+* localhost:3000/api/log/search?q=noNu3VO6HFULV0Hl&page=1
+
 
 ## 결과
 

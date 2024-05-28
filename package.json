@@ -18,6 +18,7 @@
     "@nestjs/swagger": "^7.3.1",
     "@prisma/client": "5.5.2",
     "axios": "^1.6.8",
+    "meilisearch": "^0.40.0",
     "prisma-class-generator": "^0.2.9",
     "prisma-extension-cuid2": "^1.1.1",
     "reflect-metadata": "^0.1.13",

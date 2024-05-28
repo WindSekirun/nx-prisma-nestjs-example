@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { getPipelineResult } from '../utils/utils';
+import { MeiliService } from '../../meili.service';
 
 @Injectable()
 export class BuildLogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private meili: MeiliService
+  ) {}
 
   async getBuildLogChunk(
     buildId: string,
@@ -36,7 +40,11 @@ export class BuildLogService {
     return chunk[0];
   }
 
-  private async getPipelineResult(buildId: string) {
-    return await getPipelineResult(this.prisma, buildId);
+  async indexBuildLogChunks() {
+    return await this.meili.indexBuildLogChunks();
+  }
+
+  async search(query: string, page: number) {
+    return await this.meili.searchBuildLogChunks(query, page);
   }
 }

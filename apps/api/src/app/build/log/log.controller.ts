@@ -21,4 +21,14 @@ export class BuildLogController {
   ) {
     return this.buildLogService.getBuildLogChunk(id, page || 1, orderBy);
   }
+
+  @Get('log/index')
+  async indexBuildLogChunks() {
+    return this.buildLogService.indexBuildLogChunks();
+  }
+
+  @Get('log/search')
+  async search(@Query('q') query: string, @Query('page', new ParseIntPipe) page: number) {
+    return this.buildLogService.search(query, page);
+  }
 }

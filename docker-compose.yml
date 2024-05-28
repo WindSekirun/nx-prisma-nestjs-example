@@ -6,11 +6,24 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
 
+  meilisearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v1.8
+    environment:
+      - MEILI_MASTER_KEY=sampleMasterKeyOfSomething
+      - MEILI_NO_ANALYTICS=true
+    ports:
+      - '7700:7700'
+    volumes:
+      - meilisearch-data:/meili_data
+    restart: unless-stopped
+
 volumes:
   postgres-data:
+  meilisearch-data:

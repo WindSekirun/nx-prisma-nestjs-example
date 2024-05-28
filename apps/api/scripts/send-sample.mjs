@@ -13,6 +13,14 @@ function generateRandomString(size) {
   return result;
 }
 
+function generateLogContent(count) {
+  let result = ''
+  for (let i = 0; i < count; i++) {
+    result += `${generateRandomString(4)} ${generateRandomString(4)} ${generateRandomString(4)} ${generateRandomString(17)}\n`
+  }
+  return result;
+}
+
 function generateUnitTestResults(moduleCount, classesCount, functionCount) {
   return Array.from({ length: moduleCount }, (_, index) => ({
     moduleName: `:feature${index + 1}`,
@@ -79,7 +87,7 @@ const sleep = (ms) => {
 
 for (let i = 0; i < 5; i++) {
   const buildId = 14000 + i;
-  const buildLogContent = generateRandomString(800 * 1024);
+  const buildLogContent = generateLogContent(800);
   const unitTestResults = generateUnitTestResults(45, 7, 10);
   const id = buildId.toString();
 

@@ -98,6 +98,9 @@ export class BuildAnalysisService {
           }
         }
       }
+    }, {
+      maxWait: 9000000,
+      timeout: 9000000
     });
   }
 
