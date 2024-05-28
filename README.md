@@ -260,13 +260,78 @@ where: {
   * 이 프로젝트는 어디까지나 읽기가 더 많고, 쓰기는 별로 없으므로...
 
 ## 11. Full-Text search with meilisearch
-GIN Query를 사용해서 FTS를 구현할 수는 있지만, 일단 여기에서는 한국어도 잘 지원한다고 하는 meilisearch를 써보기로 함
-* 마스터키: docker-compose로 올릴 때의 MEILI_MASTER_KEY
-* Admin API Key: `curl -X GET 'http://localhost:7700/keys' -H 'Authorization: Bearer {MASTER_KEY}' | jq` 의, [1].key
+GIN Query를 사용해서 FTS를 구현할 수는 있지만, 일단 여기에서는 한국어도 잘 지원한다고 하는 meilisearch를 써보기로 함 (나름 신흥강자?)
 
-* localhost:3000/api/log/index
-* localhost:3000/api/log/search?q=noNu3VO6HFULV0Hl&page=1
+### 설치
+Docker-compose로 간단히 올릴 수 있음
 
+```
+meilisearch:
+  container_name: meilisearch
+  image: getmeili/meilisearch:v1.8
+  environment:
+    - MEILI_MASTER_KEY=sampleMasterKeyOfSomething // 이 정보는 기억하고 있어야 함
+    - MEILI_NO_ANALYTICS=true
+  ports:
+    - '7700:7700'
+  volumes:
+    - meilisearch-data:/meili_data
+  restart: unless-stopped
+```
+
+설치한 다음에는, localhost:7700 으로 대시보드에 접근할 수 있음.
+
+이 대시보드의 접근을 위해서는 admin api key가 필요한데, 
+
+`curl -X GET 'http://localhost:7700/keys' -H 'Authorization: Bearer {MASTER_KEY}' | jq` 의, [1].key
+
+### 인덱스
+
+
+
+onModuleInit
+```
+const index = this.client.index('build_log_chunks');
+await index.updateSortableAttributes(['createdAt']);
+```
+
+실제 생성
+```
+const documents = chunks.map((chunk) => ({
+  id: chunk.id,
+  chunkIndex: chunk.chunkIndex,
+  logContent: chunk.logContent,
+  buildId: chunk.buildLog.pipelineResult.buildId,
+  createdAt: chunk.createdAt.toISOString(),
+}));
+
+const index = this.client.index('build_log_chunks');
+await index.addDocuments(documents, { primaryKey: 'id' });
+```
+
+* onModuleInit 에서는 SortableAttributes로 createdAt를 설정해야 함
+* 실제 생성할 때에는 Chunk의 데이터를 추가하는데, 이 때 검색될 logContent 말고도 다른 부가정보를 같이 넣을 수 있음
+
+별도의 Replica를 두지 않는 이상은, 주기적으로 동기화하는 것이 좋지 않을까 싶기는 함 (@nestjs/schedule 같은 걸로)
+
+### 검색
+하이라이트 기능, Pagination 기능 모두 간단한 옵션으로 제공됨.
+
+```
+const index = this.client.index('build_log_chunks');
+const searchParams = {
+  limit: limit, // 한번에 가져올 갯수
+  offset: (page - 1) * limit, 
+  sort: ['createdAt:desc'], // 정렬할 순서 결정
+  attributesToHighlight: ['logContent'], // document의 어떤 key를 하이라이트할 것인지 선택.
+  showMatchesPosition: true, // 하이라이트된 항목의 위치를 표시
+};
+const result = await index.search(query, searchParams);
+```
+
+로 하면, _formatted.logContent 로 `djqS 3nYf <em>CG4m</em>` 과 같이 하이라이팅 된 부분이 포함되면서 / _matchesPosition 도 `{ "start": 10, "length": 4}` 나옴.
+
+전체 텍스트가 나오는 부분은.. 로그 문맥을 살펴봐서 주변의 일정 부분만 나오도록 애플리케이션 단에서 하면 되지 않을까 싶은데, 그 부분은 차차 작성해보는거로.
 
 ## 결과
 
