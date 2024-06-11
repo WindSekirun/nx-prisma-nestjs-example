@@ -14,9 +14,7 @@ export class LogIndexProcessor {
 
   @OnQueueActive()
   onActive(job: Job) {
-    console.log(
-      `Processing job ${job.id} of type ${job.name}`
-    );
+    console.log(`Processing job ${job.id} of type ${job.name}`);
   }
 
   @OnQueueError()
@@ -24,7 +22,10 @@ export class LogIndexProcessor {
     console.log(`Error job ${job.id} of type ${job.name}: ${job.stacktrace}`);
   }
 
-  @Process('index-chunks')
+  @Process({
+    name: 'index-chunks',
+    concurrency: 2,
+  })
   async handleIndexChunk(job: Job) {
     const { ids } = job.data;
     const chunks = await this.prisma.buildLogChunk.findMany({

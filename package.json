@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx build api && conc 'yarn:serve-*'",
+    "start": "conc 'yarn:serve-*'",
+    "serve": "nx build api && conc 'yarn:serve-*'",
     "serve-api": "nx serve api",
     "serve-worker": "node dist/apps/nx-prisma-nestjs-example/worker.js",
     "migrate": "nx prisma-migrate api dev --name=init",
