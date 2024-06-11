@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "serve": "nx serve api",
+    "start": "conc 'yarn:serve-*'",
+    "serve": "nx build api && conc 'yarn:serve-*'",
+    "serve-api": "nx serve api",
+    "serve-worker": "node dist/apps/nx-prisma-nestjs-example/worker.js",
     "migrate": "nx prisma-migrate api dev --name=init",
     "deploy": "nx prisma-deploy api",
     "generate": "nx prisma-generate api",
@@ -12,17 +15,21 @@
   },
   "private": true,
   "dependencies": {
+    "@nestjs/bull": "^10.1.1",
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",
     "@nestjs/swagger": "^7.3.1",
     "@prisma/client": "5.5.2",
     "axios": "^1.6.8",
+    "bull": "^4.12.9",
+    "concurrently": "^8.2.2",
     "meilisearch": "^0.40.0",
     "prisma-class-generator": "^0.2.9",
     "prisma-extension-cuid2": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
+    "tsconfig-paths": "^4.2.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

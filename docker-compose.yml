@@ -24,6 +24,16 @@ services:
       - meilisearch-data:/meili_data
     restart: unless-stopped
 
+  redis:
+    container_name: redis
+    image: redis:7.2.5-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
 volumes:
   postgres-data:
   meilisearch-data:
+  redis-data:

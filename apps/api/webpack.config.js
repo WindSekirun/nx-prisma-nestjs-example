@@ -11,6 +11,12 @@ module.exports = {
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
+      additionalEntryPoints: [
+        {
+          entryName: 'worker',
+          entryPath: './apps/api/src/worker.ts'
+        }
+      ],
       optimization: false,
       outputHashing: 'none',
     }),
