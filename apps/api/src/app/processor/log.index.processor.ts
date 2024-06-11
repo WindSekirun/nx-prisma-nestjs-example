@@ -1,4 +1,4 @@
-import { OnQueueActive, Process, Processor } from '@nestjs/bull';
+import { OnQueueActive, OnQueueError, Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -15,11 +15,16 @@ export class LogIndexProcessor {
   @OnQueueActive()
   onActive(job: Job) {
     console.log(
-      `Processing job ${job.id} of type ${job.name} with data (${job.data.length} size)`
+      `Processing job ${job.id} of type ${job.name}`
     );
   }
 
-  @Process('index-chunk')
+  @OnQueueError()
+  onError(job: Job) {
+    console.log(`Error job ${job.id} of type ${job.name}: ${job.stacktrace}`);
+  }
+
+  @Process('index-chunks')
   async handleIndexChunk(job: Job) {
     const { ids } = job.data;
     const chunks = await this.prisma.buildLogChunk.findMany({
@@ -34,6 +39,7 @@ export class LogIndexProcessor {
     });
 
     if (chunks) {
+      console.log(`Requesting index: ${chunks.length}`);
       this.meili.indexDocuments(
         chunks,
         (chunk) => chunk.buildLog.pipelineResult.buildId

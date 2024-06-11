@@ -17,6 +17,7 @@ export class MeiliService implements OnModuleInit {
   async onModuleInit() {
     const index = this.client.index('build_log_chunks');
     await index.updateSortableAttributes(['createdAt']);
+    await index.updateFilterableAttributes(['id']);
   }
 
   async getExistingDocumentIds(batchSize: number, batch: string[]) {

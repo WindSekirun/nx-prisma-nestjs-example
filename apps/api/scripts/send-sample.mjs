@@ -85,15 +85,15 @@ const sleep = (ms) => {
   });
 };
 
-for (let i = 0; i < 5; i++) {
-  const buildId = 14000 + i;
+for (let i = 0; i < 500; i++) {
+  const buildId = 18100 + i;
   const buildLogContent = generateLogContent(800);
   const unitTestResults = generateUnitTestResults(45, 7, 10);
   const id = buildId.toString();
 
   await registerBuild(id);
-  await sleep(1000);
+  await sleep(100);
   await postBuildLog(id, buildLogContent);
-  await sleep(1000);
+  await sleep(100);
   await postUnitTestResults(id, unitTestResults);
 }

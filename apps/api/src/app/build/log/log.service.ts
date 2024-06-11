@@ -75,6 +75,8 @@ export class BuildLogService {
 
         if (newDocs.length > 0) {
           await this.logIndexQueue.add('index-chunks', { ids: newDocs });
+        } else {
+          console.log(`Not need to index documents. offset: ${offset}`)
         }
       }
 
