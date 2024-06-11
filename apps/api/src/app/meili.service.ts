@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import MeiliSearch from 'meilisearch';
+import { BuildLogChunk } from '@prisma/client';
 
 @Injectable()
 export class MeiliService implements OnModuleInit {
@@ -18,30 +19,55 @@ export class MeiliService implements OnModuleInit {
     await index.updateSortableAttributes(['createdAt']);
   }
 
-  async indexBuildLogChunks() {
-    const chunks = await this.prisma.buildLogChunk.findMany({
-      include: {
-        buildLog: {
-          include: {
-            pipelineResult: true,
-          },
-        },
+  async getExistingDocumentIds(batchSize: number, batch: string[]) {
+    const index = this.client.index('build_log_chunks');
+    const existingDocs = await index.getDocuments({
+      limit: batchSize,
+      offset: 0,
+      filter: `id IN [${batch.join(', ')}]`,
+    });
+    const existingDocIds = new Set(existingDocs.results.map((doc) => doc.id));
+    return existingDocIds;
+  }
+
+  async indexSingleBuildLog(buildId: string) {
+    const pipelineResult = await this.prisma.pipelineResult.findUnique({
+      where: {
+        buildId: buildId,
       },
     });
 
-    const documents = chunks.map((chunk) => ({
+    const buildLog = await this.prisma.buildLog.findFirst({
+      where: {
+        pipelineResultId: pipelineResult.id,
+      },
+      include: {
+        logChunks: true,
+      },
+    });
+
+    if (buildLog) {
+      this.indexDocuments(buildLog.logChunks, () => buildId);
+    }
+  }
+
+  async indexDocuments(
+    chunks: BuildLogChunk[],
+    buildIdProvider: (chunk) => string
+  ) {
+    const document = chunks.map((chunk) => ({
       id: chunk.id,
       chunkIndex: chunk.chunkIndex,
       logContent: chunk.logContent,
-      buildId: chunk.buildLog.pipelineResult.buildId,
+      buildId: buildIdProvider(chunk),
       createdAt: chunk.createdAt.toISOString(),
     }));
 
     try {
       const index = this.client.index('build_log_chunks');
-      await index.addDocuments(documents, { primaryKey: 'id' });
+      await index.addDocuments(document, { primaryKey: 'id' });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
